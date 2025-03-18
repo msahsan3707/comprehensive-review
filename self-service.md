@@ -71,6 +71,37 @@ presenters         do280-presenter
 workshop-support   do280-support
 
 
+[mahsan@r9 comprehensive-review]$ vim role.yaml
+[mahsan@r9 comprehensive-review]$ oc create -f role.yaml
+role.rbac.authorization.k8s.io/pod-reader created
+[mahsan@r9 comprehensive-review]$ cat role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+[mahsan@r9 comprehensive-review]$
+
+
+<b> Grant the admin cluster role to the workshop-support group </b>
+[mahsan@r9 comprehensive-review]$ oc adm policy add-cluster-role-to-group admin workshop-support
+clusterrole.rbac.authorization.k8s.io/admin added: "workshop-support"
+
+
+<b> Grant the manage-groups cluster role to the workshop-support group </b>
+[mahsan@r9 comprehensive-review]$ oc adm policy add-cluster-role-to-group manage-groups workshop-support
+Warning: role 'manage-groups' not found
+clusterrole.rbac.authorization.k8s.io/manage-groups added: "workshop-support"
+[mahsan@r9 comprehensive-review]$ oc adm policy add-cluster-role-to-group manage-groups workshop-support
+clusterrole.rbac.authorization.k8s.io/manage-groups added: "workshop-support"
+[mahsan@r9 comprehensive-review]$
+
+<b> Create a cluster role binding to assign the cluster-admin cluster role to the platform group.</b>
+[mahsan@r9 comprehensive-review]$ oc adm policy add-cluster-role-to-group cluster-admin platform
+clusterrole.rbac.authorization.k8s.io/cluster-admin added: "platform"
 
 
 
