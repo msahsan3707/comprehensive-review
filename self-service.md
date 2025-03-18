@@ -103,7 +103,13 @@ clusterrole.rbac.authorization.k8s.io/manage-groups added: "workshop-support"
 [mahsan@r9 comprehensive-review]$ oc adm policy add-cluster-role-to-group cluster-admin platform
 clusterrole.rbac.authorization.k8s.io/cluster-admin added: "platform"
 
+<b>
+Allow only the platform, workshop-support and presenters groups to create
+projects, by editing the self-provisioner cluster role. Enforce that only users from
+these groups can create projects. Also, make this change permanent by setting the
+rbac.authorization.kubernetes.io/autoupdate annotation with the false value.</b>
 
+<h2>5.1. Use the oc edit command to edit the self-provisioners cluster role binding. </h2>
 
 </pre>
 
