@@ -1,5 +1,5 @@
 <pre>
-<b1>Cluster Self-service Setup   </b1>
+<h1>Cluster Self-service Setup   </h1>
 
 Configure a cluster with default settings for self-service projects.
 Outcomes
