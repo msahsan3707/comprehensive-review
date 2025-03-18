@@ -109,7 +109,7 @@ projects, by editing the self-provisioner cluster role. Enforce that only users 
 these groups can create projects. Also, make this change permanent by setting the
 rbac.authorization.kubernetes.io/autoupdate annotation with the false value.</b>
 
-<h2>5.1. Use the oc edit command to edit the self-provisioners cluster role binding. </h2>
+<b>5.1. Use the oc edit command to edit the self-provisioners cluster role binding. </b>
 
 </pre>
 
