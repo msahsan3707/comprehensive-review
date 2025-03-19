@@ -395,6 +395,492 @@ Starting pod/image-debug-b456s ...
 Removing debug pod ...
 [mahsan@r9 comprehensive-review]$
 
+[mahsan@r9 comprehensive-review]$ oc adm create-bootstrap-project-template -o yaml > project-template.yaml
+[mahsan@r9 comprehensive-review]$ cat project-template.yaml
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: project-request
+objects:
+- apiVersion: project.openshift.io/v1
+  kind: Project
+  metadata:
+    annotations:
+      openshift.io/description: ${PROJECT_DESCRIPTION}
+      openshift.io/display-name: ${PROJECT_DISPLAYNAME}
+      openshift.io/requester: ${PROJECT_REQUESTING_USER}
+    creationTimestamp: null
+    name: ${PROJECT_NAME}
+  spec: {}
+  status: {}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    name: admin
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: admin
+  subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: ${PROJECT_ADMIN_USER}
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_DISPLAYNAME
+- name: PROJECT_DESCRIPTION
+- name: PROJECT_ADMIN_USER
+- name: PROJECT_REQUESTING_USER
+[mahsan@r9 comprehensive-review]$
+
+[mahsan@r9 comprehensive-review]$ oc get resourcequota/workshop limitrange/workshop networkpolicy/workshop -o yaml
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    creationTimestamp: "2025-03-19T17:16:01Z"
+    name: workshop
+    namespace: template-test
+    resourceVersion: "87882"
+    uid: d729dae9-b484-487f-941f-ba894c80db4c
+  spec:
+    hard:
+      limits.cpu: "2"
+      limits.memory: 1Gi
+      requests.cpu: 1500m
+      requests.memory: 750Mi
+  status:
+    hard:
+      limits.cpu: "2"
+      limits.memory: 1Gi
+      requests.cpu: 1500m
+      requests.memory: 750Mi
+    used:
+      limits.cpu: 500m
+      limits.memory: 500Mi
+      requests.cpu: 100m
+      requests.memory: 250Mi
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    creationTimestamp: "2025-03-19T17:25:42Z"
+    name: workshop
+    namespace: template-test
+    resourceVersion: "82633"
+    uid: 5af47f72-ed01-495a-9aef-b8243fa2292a
+  spec:
+    limits:
+    - default:
+        cpu: 500m
+        memory: 500Mi
+      defaultRequest:
+        cpu: 100m
+        memory: 250Mi
+      max:
+        cpu: 750m
+        memory: 750Mi
+      type: Container
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    creationTimestamp: "2025-03-19T17:56:39Z"
+    generation: 1
+    name: workshop
+    namespace: template-test
+    resourceVersion: "87065"
+    uid: 7feef7ce-0947-435c-9591-548b9c195af8
+  spec:
+    ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            workshop: template-test
+      - namespaceSelector:
+          matchLabels:
+            network.openshift.io/policy-group: ingress
+    podSelector: {}
+    policyTypes:
+    - Ingress
+kind: List
+metadata:
+  resourceVersion: ""
+[mahsan@r9 comprehensive-review]$
+
+
+
+[mahsan@r9 comprehensive-review]$ oc get resourcequota/workshop limitrange/workshop networkpolicy/workshop -o yaml >> project-template.yaml
+[mahsan@r9 comprehensive-review]$ cat project-template.yaml
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: project-request
+objects:
+- apiVersion: project.openshift.io/v1
+  kind: Project
+  metadata:
+    annotations:
+      openshift.io/description: ${PROJECT_DESCRIPTION}
+      openshift.io/display-name: ${PROJECT_DISPLAYNAME}
+      openshift.io/requester: ${PROJECT_REQUESTING_USER}
+    creationTimestamp: null
+    name: ${PROJECT_NAME}
+  spec: {}
+  status: {}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    name: admin
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: admin
+  subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: ${PROJECT_ADMIN_USER}
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_DISPLAYNAME
+- name: PROJECT_DESCRIPTION
+- name: PROJECT_ADMIN_USER
+- name: PROJECT_REQUESTING_USER
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    creationTimestamp: "2025-03-19T17:16:01Z"
+    name: workshop
+    namespace: template-test
+    resourceVersion: "87882"
+    uid: d729dae9-b484-487f-941f-ba894c80db4c
+  spec:
+    hard:
+      limits.cpu: "2"
+      limits.memory: 1Gi
+      requests.cpu: 1500m
+      requests.memory: 750Mi
+  status:
+    hard:
+      limits.cpu: "2"
+      limits.memory: 1Gi
+      requests.cpu: 1500m
+      requests.memory: 750Mi
+    used:
+      limits.cpu: 500m
+      limits.memory: 500Mi
+      requests.cpu: 100m
+      requests.memory: 250Mi
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    creationTimestamp: "2025-03-19T17:25:42Z"
+    name: workshop
+    namespace: template-test
+    resourceVersion: "82633"
+    uid: 5af47f72-ed01-495a-9aef-b8243fa2292a
+  spec:
+    limits:
+    - default:
+        cpu: 500m
+        memory: 500Mi
+      defaultRequest:
+        cpu: 100m
+        memory: 250Mi
+      max:
+        cpu: 750m
+        memory: 750Mi
+      type: Container
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    creationTimestamp: "2025-03-19T17:56:39Z"
+    generation: 1
+    name: workshop
+    namespace: template-test
+    resourceVersion: "87065"
+    uid: 7feef7ce-0947-435c-9591-548b9c195af8
+  spec:
+    ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            workshop: template-test
+      - namespaceSelector:
+          matchLabels:
+            network.openshift.io/policy-group: ingress
+    podSelector: {}
+    policyTypes:
+    - Ingress
+kind: List
+metadata:
+  resourceVersion: ""
+[mahsan@r9 comprehensive-review]$
+
+[mahsan@r9 comprehensive-review]$ sed -i 's/template-test/${PROJECT_NAME}/g' project-template.yaml
+
+[mahsan@r9 comprehensive-review]$ oc create -f project-template.yaml -n openshift-config
+template.template.openshift.io/project-request created
+[mahsan@r9 comprehensive-review]$ cat project-template.yaml
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: project-request
+objects:
+- apiVersion: project.openshift.io/v1
+  kind: Project
+  metadata:
+    annotations:
+      openshift.io/description: ${PROJECT_DESCRIPTION}
+      openshift.io/display-name: ${PROJECT_DISPLAYNAME}
+      openshift.io/requester: ${PROJECT_REQUESTING_USER}
+    name: ${PROJECT_NAME}
+    labels:
+      workshop: ${PROJECT_NAME}
+  spec: {}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: admin
+    namespace: workshop
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: admin
+  subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: ${PROJECT_ADMIN_USER}
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: workshop
+    namespace: ${PROJECT_NAME}
+  spec:
+    hard:
+      limits.cpu: "2"
+      limits.memory: 1Gi
+      requests.cpu: 1500m
+      requests.memory: 750Mi
+    hard:
+      limits.cpu: "2"
+      limits.memory: 1Gi
+      requests.cpu: 1500m
+      requests.memory: 750Mi
+    used:
+      limits.cpu: 500m
+      limits.memory: 500Mi
+      requests.cpu: 100m
+      requests.memory: 250Mi
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    name: workshop
+    namespace: ${PROJECT_NAME}
+  spec:
+    limits:
+    - default:
+        cpu: 500m
+        memory: 500Mi
+      defaultRequest:
+        cpu: 100m
+        memory: 250Mi
+      max:
+        cpu: 750m
+        memory: 750Mi
+      type: Container
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: workshop
+    namespace: ${PROJECT_NAME}
+  spec:
+    ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            workshop: ${PROJECT_NAME}
+      - namespaceSelector:
+          matchLabels:
+            network.openshift.io/policy-group: ingress
+    podSelector: {}
+    policyTypes:
+    - Ingress
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_DISPLAYNAME
+- name: PROJECT_DESCRIPTION
+- name: PROJECT_ADMIN_USER
+- name: PROJECT_REQUESTING_USER
+[mahsan@r9 comprehensive-review]$
+
+[mahsan@r9 comprehensive-review]$ oc describe template project-request -n openshift-config
+Name:           project-request
+Namespace:      openshift-config
+Created:        About a minute ago
+Labels:         <none>
+Annotations:    <none>
+
+Parameters:
+    Name:       PROJECT_NAME
+    Required:   false
+    Value:      <none>
+
+    Name:       PROJECT_DISPLAYNAME
+    Required:   false
+    Value:      <none>
+
+    Name:       PROJECT_DESCRIPTION
+    Required:   false
+    Value:      <none>
+
+    Name:       PROJECT_ADMIN_USER
+    Required:   false
+    Value:      <none>
+
+    Name:       PROJECT_REQUESTING_USER
+    Required:   false
+    Value:      <none>
+
+
+Object Labels:  <none>
+
+Message:        <none>
+
+Objects:
+    Project.project.openshift.io                ${PROJECT_NAME}
+    RoleBinding.rbac.authorization.k8s.io       admin
+    ResourceQuota                               workshop
+    LimitRange                                  workshop
+    NetworkPolicy.networking.k8s.io             workshop
+[mahsan@r9 comprehensive-review]$
+
+[mahsan@r9 comprehensive-review]$ oc get projects.config.openshift.io cluster
+NAME      AGE
+cluster   106d
+[mahsan@r9 comprehensive-review]$ oc get projects.config.openshift.io cluster -o yaml
+apiVersion: config.openshift.io/v1
+kind: Project
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    release.openshift.io/create-only: "true"
+  creationTimestamp: "2024-12-03T08:02:21Z"
+  generation: 1
+  name: cluster
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1de19896-228b-4a9d-913f-0d775bc4bebc
+  resourceVersion: "1588"
+  uid: 7e11232f-22f6-4f69-be46-5cae73c50b98
+spec: {}
+[mahsan@r9 comprehensive-review]$
+
+apiVersion: config.openshift.io/v1
+kind: Project
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    release.openshift.io/create-only: "true"
+  creationTimestamp: "2024-12-03T08:02:21Z"
+  generation: 1
+  name: cluster
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1de19896-228b-4a9d-913f-0d775bc4bebc
+  resourceVersion: "1588"
+  uid: 7e11232f-22f6-4f69-be46-5cae73c50b98
+spec:
+  projectRequestTemplate:
+    name: project-request
+
+
+oc edit projects.config.openshift.io cluster
+Edit cancelled, no changes made.
+[mahsan@r9 comprehensive-review]$ oc edit projects.config.openshift.io cluster
+project.config.openshift.io/cluster edited
+[mahsan@r9 comprehensive-review]$
+
+
+ watch oc get pod -n openshift-apiserver
+
+[mahsan@r9 comprehensive-review]$  oc get pod -n openshift-apiserver
+NAME                         READY   STATUS    RESTARTS   AGE
+apiserver-58d7c9b4dd-8qkjp   2/2     Running   0          2m49s
+[mahsan@r9 comprehensive-review]$
+
+
+[mahsan@r9 comprehensive-review]$ oc get resourcequotas  --all-namespaces
+NAMESPACE                NAME                            AGE     REQUEST                                                              LIMIT
+openshift-host-network   host-network-namespace-quotas   106d    count/daemonsets.apps: 0/0, count/deployments.apps: 0/0, pods: 0/0   limits.cpu: 0/0, limits.memory: 0/0
+template-test            workshop                        4h44m   requests.cpu: 100m/1500m, requests.memory: 250Mi/750Mi               limits.cpu: 500m/2, limits.memory: 500Mi/1Gi
+[mahsan@r9 comprehensive-review]$ oc get limitrange  --all-namespaces
+NAMESPACE       NAME       CREATED AT
+template-test   workshop   2025-03-19T17:25:42Z
+[mahsan@r9 comprehensive-review]$ oc get networkpolicy  --all-namespaces
+NAMESPACE       NAME       POD-SELECTOR   AGE
+template-test   workshop   <none>         4h4m
+[mahsan@r9 comprehensive-review]$
+
+[mahsan@r9 comprehensive-review]$ oc new-project  test-project2
+Now using project "test-project2" on server "https://api.crc.testing:6443".
+
+You can add applications to this project with the 'new-app' command. For example, try:
+
+    oc new-app rails-postgresql-example
+
+to build a new example application in Ruby. Or use kubectl to deploy a simple Kubernetes application:
+
+    kubectl create deployment hello-node --image=registry.k8s.io/e2e-test-images/agnhost:2.43 -- /agnhost serve-hostname
+
+[mahsan@r9 comprehensive-review]$ oc get project test-project2 -o yaml
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  annotations:
+    openshift.io/description: ""
+    openshift.io/display-name: ""
+    openshift.io/requester: kubeadmin
+    openshift.io/sa.scc.mcs: s0:c26,c10
+    openshift.io/sa.scc.supplemental-groups: 1000670000/10000
+    openshift.io/sa.scc.uid-range: 1000670000/10000
+  creationTimestamp: "2025-03-19T22:02:49Z"
+  labels:
+    kubernetes.io/metadata.name: test-project2
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
+    <b>workshop: test-project2 </b>
+  name: test-project2
+  resourceVersion: "122013"
+  uid: 698d4588-c5b7-43c5-9167-4e52bd54ac06
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
+[mahsan@r9 comprehensive-review]$
+
+[mahsan@r9 comprehensive-review]$  oc adm policy add-role-to-group edit d0280-attendees -n test-project2
+Warning: Group 'd0280-attendees' not found
+clusterrole.rbac.authorization.k8s.io/edit added: "d0280-attendees"
+[mahsan@r9 comprehensive-review]$  oc adm policy add-role-to-group edit d0280-attendees -n test-project2
+clusterrole.rbac.authorization.k8s.io/edit added: "d0280-attendees"
+[mahsan@r9 comprehensive-review]$
 
 
 </pre>
